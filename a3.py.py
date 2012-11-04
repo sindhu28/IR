@@ -136,7 +136,7 @@ def main():
             if out_links[row][1] != 0:
                 R[row][col] = 0.15/links
             
-    #dB + (1-d)R             
+    #G = dB + (1-d)R             
     for row in range(0,links):
         for col in range(0,links):
             cited_citing_array[row][col] =  ((cited_citing_array[row][col]*0.85 + R[row][col]))
@@ -155,7 +155,6 @@ def main():
         wk2 = dot(cited_citing_array,wk1)
         itr += 1
     print itr
-    print wk1
 
     fw = open('D:/hw/metadata.txt', 'w')
     for row in range(0,links):
