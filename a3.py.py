@@ -8,12 +8,6 @@ import unicodedata
 import xml
 import xml.etree.ElementTree
 
-def compare(wk1, wk2, links):
-    for i in range(0,links):
-        if wk1[i] != wk2[i]:
-            return False
-    return True
-
 def process_url(url):
     #If there are anchors, just store the address of the page
     #print url
@@ -73,6 +67,7 @@ def main():
         htmlpage = urllib2.urlopen(url)
         soup = BeautifulSoup(htmlpage)
         title_tag = soup.find('title').renderContents()
+        title_tag = title_tag.replace('\n',' ')
         title_tags.append(title_tag)
         #finding all <a> tags
         for link in soup.findAll('a'):
@@ -166,8 +161,9 @@ def main():
     for row in range(0,links):
         string = ""
         for val in in_pagelinks[row]:            
-            string = string+'(url):'+val[0]+"-"+'(anchor text):'+val[1]+" "
-        data = '(id):'+urlID[row]+' , URL:'+urls[row]+', (title):'+title_tags[row]+', (page rank):'+str(wk1[row][0])+','+string+'\n'
+            #string = string+'(url):'+val[0]+"-"+'(anchor text):'+val[1]+" "
+            string = string + val[1].lower()+" "
+        data = 'ID:'+urlID[row]+'(FIELD)'+'URL:'+urls[row]+'(FIELD)'+'TITLE:'+title_tags[row]+'(FIELD)'+'PAGE RANK:'+str(wk1[row][0])+'(FIELD)'+'ANCHOR TEXT:'+string+'\n'
         fw.writelines(data)
     fw.close()
 
