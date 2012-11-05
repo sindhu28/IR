@@ -25,14 +25,10 @@ while query.lower() != "zzz":
                 pages.append([url, title, float(pagerank), ID])
         #sort the index records in order of page ranks
         pages.sort(key=lambda x:x[2], reverse=True)
-        print len(pages)
         f.close()
         #Print snippet from the urls
         index = 0
         for page in pages:
-            #print "\nURL:", page[0]
-            #print "TITLE:", page[1]
-            #print "PAGERANK", page[2]
             url = page[0]
             html = urllib2.urlopen(url)
             soup = BeautifulSoup(html)
@@ -45,8 +41,14 @@ while query.lower() != "zzz":
                 text = ' '.join(text.split())+' '
                 string = string+text+' '
             string = string.split()
-            string = string[200:220]
+            l = len(string)
+            mid = l/2
+            if (l/2+20) < l:
+                string = string[mid:mid+20]
+            else:
+                string = string[mid:]
             string = ' '.join(string)           
-            print '\n', page[3], ":", page[0], "----", page[1]
+            print '\n',page[0]
+            print "TITLE:", page[1]
             print "CONTENT:", string
     query = raw_input('\nEnter term : ')

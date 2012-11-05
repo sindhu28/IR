@@ -14,7 +14,6 @@ def process_url(url):
     tokens = url.split('/')
     
     if tokens[-1].find('#') == True:
-        print "remove #"
         tokens[-1] = tokens[-1].split('#')[0]
         url = '/'.join(tokens)
 
@@ -119,50 +118,54 @@ def main():
         for row in range(0,links):
             count += cited_citing_array[row][col]
         out_links.append([urls[col], count])
-        print "col", col, ":", count
         total += count
-    print total
     
     #normalizing
     for col in range(0,links):
         for row in range(0,links):
             if out_links[col][1] != 0 :
                 cited_citing_array[row][col] = ((cited_citing_array[row][col]/out_links[col][1]))
-    
-    #(1-d)R
-    R = zeros(shape=(links,links))
-    for row in range(0,links):
-        for col in range(0,links):
-            if out_links[row][1] != 0:
-                R[row][col] = 0.15/links
-            
-    #G = dB + (1-d)R             
-    for row in range(0,links):
-        for col in range(0,links):
-            cited_citing_array[row][col] =  ((cited_citing_array[row][col]*0.85 + R[row][col]))
 
     #initializing w 
     w = zeros(shape=(links,1))
     wk1 = w
     for row in range(0,links):
         w[row][0] = 1
-    wk2 = dot(cited_citing_array,w)
-   
-    #w(k2) = dBw(k1) till it converges
+
+    #populating z=(1-d)z0
+    z = zeros(shape=(links,links))
+    for row in range(0,links):
+        for col in range(0, links):
+            z[row][col] = 0.15
+
+    #initializing dB
+    dB = cited_citing_array
+    for row in range(0,links):
+        for col in range(0,links):
+            dB[row][col] = 0.85*dB[row][col]
+
+    wk2 = dot(dB,w)+z   
+    #w(k2) = dBw(k1)+(1-d)z0 till it converges
     itr = 0
     while allclose(wk1, wk2) == False:
         wk1 = wk2
-        wk2 = dot(cited_citing_array,wk1)
+        wk2 = dot(dB,wk1)+z
         itr += 1
-    print itr
 
-    fw = open('D:/hw/metadata.txt', 'w')
+    page_ranks = []
+    for row in range(0,links):
+        page_ranks.append([float(wk1[row][0]),row,0])
+    page_ranks.sort(key=lambda x:x[0], reverse=True)
+    for row in range(0,links):
+        page_ranks[row][2] = row+1
+    page_ranks.sort(key=lambda x:x[1])
+
+    fw = open('D:/hw/Metadata.txt', 'w')
     for row in range(0,links):
         string = ""
         for val in in_pagelinks[row]:            
-            #string = string+'(url):'+val[0]+"-"+'(anchor text):'+val[1]+" "
             string = string + val[1].lower()+" "
-        data = 'ID:'+urlID[row]+'(FIELD)'+'URL:'+urls[row]+'(FIELD)'+'TITLE:'+title_tags[row]+'(FIELD)'+'PAGE RANK:'+str(wk1[row][0])+'(FIELD)'+'ANCHOR TEXT:'+string+'\n'
+        data = 'ID:'+urlID[row]+'(FIELD)'+'URL:'+urls[row]+'(FIELD)'+'TITLE:'+title_tags[row]+'(FIELD)'+'PAGE RANK:'+str(page_ranks[row][2])+'(FIELD)'+'ANCHOR TEXT:'+title_tags[row]+string+'\n'
         fw.writelines(data)
     fw.close()
 
