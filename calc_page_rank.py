@@ -1,4 +1,4 @@
-f = open('D:/hw/metadata.txt', 'r')
+f = open('D:/hw/Metadata.txt', 'r')
 pages = []
 oldpages = []
 for line in f.readlines():
@@ -7,8 +7,15 @@ for line in f.readlines():
         pagerank = values['PAGE RANK']
         title = values['TITLE']
         ID = values['ID']
-        pages.append((url, title, ID, float(pagerank)))
-        oldpages.append((url, title, ID, float(pagerank)))
-pages.sort(key=lambda x:x[3], reverse=True)        
+        pages.append((url, title, ID, int(pagerank)))
+        oldpages.append([url, title, ID, int(pagerank)])
+pages.sort(key=lambda x:x[3])        
 for page in pages:
     print page[2].rjust(4), "  ",page[0]
+
+index = 1
+for page in pages:
+    for opage in oldpages:
+            if page[0]==opage[0]:
+                    opage[3] = index
+    index += 1
