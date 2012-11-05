@@ -22,33 +22,36 @@ while query.lower() != "zzz":
                 pagerank = values['PAGE RANK']
                 title = values['TITLE']
                 ID = values['ID']
-                pages.append([url, title, float(pagerank), ID])
-        #sort the index records in order of page ranks
-        pages.sort(key=lambda x:x[2], reverse=True)
-        f.close()
-        #Print snippet from the urls
-        index = 0
-        for page in pages:
-            url = page[0]
-            html = urllib2.urlopen(url)
-            soup = BeautifulSoup(html)
-            ptext = soup.findAll('div')
-            string=''
-            for line in ptext:
-                text = line.findAll(text=True, )
-                text = ''.join(text)
-                text = text.replace('\n', ' ')
-                text = ' '.join(text.split())+' '
-                string = string+text+' '
-            string = string.split()
-            l = len(string)
-            mid = l/2
-            if (l/2+20) < l:
-                string = string[mid:mid+20]
-            else:
-                string = string[mid:]
-            string = ' '.join(string)           
-            print '\n',page[0]
-            print "TITLE:", page[1]
-            print "CONTENT:", string
+                pages.append([url, title, int(pagerank), ID])
+        if pages != []:
+            #sort the index records in order of page ranks
+            pages.sort(key=lambda x:x[2])
+            f.close()
+            #Print snippet from the urls
+            index = 0
+            for page in pages:
+                url = page[0]
+                html = urllib2.urlopen(url)
+                soup = BeautifulSoup(html)
+                ptext = soup.findAll('div')
+                string=''
+                for line in ptext:
+                    text = line.findAll(text=True, )
+                    text = ''.join(text)
+                    text = text.replace('\n', ' ')
+                    text = ' '.join(text.split())+' '
+                    string = string+text+' '
+                string = string.split()
+                l = len(string)
+                mid = l/2
+                if (l/2+20) < l:
+                    string = string[mid:mid+20]
+                else:
+                    string = string[mid:]
+                string = ' '.join(string)           
+                print '\n',page[0]
+                print "TITLE:", page[1]
+                print "CONTENT:", string
+        else:
+            print "not found"
     query = raw_input('\nEnter term : ')
