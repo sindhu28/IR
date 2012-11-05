@@ -1,4 +1,4 @@
-f = open('D:/hw/Metadata.txt', 'r')
+f = open('D:/Metadata.txt', 'r')
 pages = []
 oldpages = []
 for line in f.readlines():
